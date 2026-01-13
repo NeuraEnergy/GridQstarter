@@ -1,0 +1,10 @@
+horizon_hours: 24
+run_id: backtest_001
+solver_gap_tolerance: 0.0001
+solver_time_limit_seconds: 60.0
+tariff:
+  demand_charge_enabled: false
+  demand_charge_gbp_per_kw: 0.0
+  flat_export_price_gbp_per_kwh: null
+  flat_import_price_gbp_per_kwh: null
+timestep_minutes: 15

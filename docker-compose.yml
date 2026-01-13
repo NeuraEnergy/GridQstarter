@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  gridq:
+    build: .
+    image: gridq-engine:latest
+    volumes:
+      - ./examples:/app/examples
+      - ./outputs:/app/outputs
+    command: gridq --help

@@ -1,0 +1,13 @@
+battery:
+  capacity_kwh: 15.0
+  charge_efficiency: 0.95
+  degradation_cost_gbp_per_kwh: 0.01
+  discharge_efficiency: 0.95
+  initial_soc_frac: 0.5
+  max_charge_kw: 7.5
+  max_discharge_kw: 7.5
+  max_soc_frac: 0.9
+  min_soc_frac: 0.1
+max_grid_export_kw: 20.0
+max_grid_import_kw: 50.0
+site_id: example_site_003

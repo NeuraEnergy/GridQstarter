@@ -1,0 +1,55 @@
+[project]
+name = "gridq-engine"
+version = "0.1.0"
+description = "GridQ single-site behind-the-meter optimization engine MVP"
+authors = [{name = "GridQ Team"}]
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    "linopy>=0.3.0",
+    "highspy>=1.5.0",
+    "pandas>=2.0.0",
+    "pyarrow>=12.0.0",
+    "numpy>=1.24.0",
+    "pydantic>=2.0.0",
+    "typer>=0.9.0",
+    "matplotlib>=3.7.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+gridq = "gridq_engine.cli:app"
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = []
