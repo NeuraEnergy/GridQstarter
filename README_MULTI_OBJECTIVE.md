@@ -202,6 +202,55 @@ No external LP solver required - uses scipy's built-in HiGHS.
 
 4. **Deduplication**: Adjacent Pareto points with identical energy costs are filtered (constraint not binding)
 
+## LP Degeneracy and Regularization
+
+### The Problem: Bang-Bang Oscillation
+
+LP-based battery optimization commonly produces **oscillating dispatch schedules** where charging switches on and off arbitrarily even when load and PV are smooth. This occurs because:
+
+1. **LP Degeneracy**: Multiple solutions achieve the same optimal objective value
+2. **Bang-Bang Control**: LP naturally produces extreme solutions (max charge OR zero) rather than intermediate values
+3. **Temporal Indifference**: With perfect foresight, the optimizer doesn't care *when* it charges, only that it reaches target SOC by the needed time
+
+This is a well-documented phenomenon in optimal control theory and energy optimization literature.
+
+### The Solution: Ramp Rate Constraints + Time-Weighted Regularization
+
+We use two complementary techniques:
+
+**1. Ramp Rate Constraints (Primary)**
+
+Limit how fast battery power can change between timesteps:
+
+```
+|net_power[t] - net_power[t-1]| ≤ ramp_limit
+```
+
+where `net_power = charge - discharge`. We use `ramp_limit = 1.0 kW` per timestep (4 kW/hour for 15-minute resolution).
+
+This forces smooth transitions and eliminates arbitrary oscillation by making the LP unable to switch rapidly between charging and exporting.
+
+**2. Time-Weighted Regularization (Secondary)**
+
+Small penalty that prefers earlier charging and later discharging when solutions are otherwise equivalent:
+
+```
+Objective += ε × Σ (1 + t/T) × charge[t]    # Later charging costs more
+Objective += ε × Σ (2 - t/T) × discharge[t] # Earlier discharging costs more
+```
+
+where `ε = 10⁻⁶` is negligible compared to real price differences.
+
+**Reference**: [arXiv:2507.04343](https://arxiv.org/abs/2507.04343) - "Optimal Sizing and Control of a Grid-Connected Battery in a Stacked Revenue Model" (2025)
+
+The paper identifies L1/L2 regularization approaches. We extend this with ramp constraints for guaranteed smooth profiles.
+
+### Related Literature
+
+- Silva & Trélat (2010). "Smooth regularization of bang-bang optimal control problems." [IEEE TAC](https://ieeexplore.ieee.org/document/5445043)
+- [MIT OCW Tutorial 7](https://ocw.mit.edu/courses/15-053-optimization-methods-in-management-science-spring-2013/): Degeneracy in Linear Programming
+- Vanderbei, R.J. "Linear Programming: Foundations and Extensions" - Chapter on degeneracy
+
 ## Limitations
 
 - Perfect foresight assumed (no forecast uncertainty)
